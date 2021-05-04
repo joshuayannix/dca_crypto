@@ -1,29 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import './App.css';
-import axios from 'axios';
-import {DatePicker,MuiPickersUtilsProvider} from '@material-ui/pickers';
+import {DatePicker, MuiPickersUtilsProvider} from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 
 function App() {
-  const [coins, setCoins] = useState([]);
   const [selectedDate, handleDateChange] = useState(new Date());
   const [price, setPrice] = useState([])
+  const [crypto, setCrypto] = useState('')
 
-  // useEffect(() => {
-  //   axios
-  //     .get(
-  //       'https://api.coingecko.com/api/v3/coins/bitcoin/history?date=30-12-2018&localization=false'
-  //     )
-  //     .then(res => {
-  //       setCoins(res.data.market_data.current_price.usd);
-  //       console.log(res.data);
-  //       console.log(res.data.market_data.current_price.usd)
-  //       console.log(res.data.market_data.market_cap.usd)
-  //     })
-  //     .catch(error => console.log(error));
-  // }, []);
-
-  
   const apiGet = (crypto, day, month, year) => {
     fetch(`https://api.coingecko.com/api/v3/coins/${crypto}/history?date=${day}-${month}-${year}&localization=false`)
     .then(res => res.json())
@@ -33,17 +17,25 @@ function App() {
     })
   }
 
-  console.log(new Date())
   const onSubmit = e => {
     e.preventDefault()
-    apiGet('bitcoin',selectedDate.getMonth() + 1, selectedDate.getDate(), selectedDate.getFullYear())
+    apiGet(crypto, selectedDate.getDate(), selectedDate.getMonth() + 1, selectedDate.getFullYear())
   };
 
+  const changeCrypto = e => {
+    setCrypto(e.target.value)
+  }
+
   return (
-    <div className="App">
-      
-      <form onSubmit={onSubmit}>
-        <label>Material UI Date</label>
+    <div className="App">      
+      <form onSubmit={onSubmit}>                                                  
+        <input 
+          onChange={changeCrypto}
+          value={crypto}
+          placeholder="crypto"  
+        />
+
+        <label>Date</label>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <DatePicker 
             value={selectedDate} 
