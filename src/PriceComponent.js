@@ -1,9 +1,9 @@
 import React from 'react'
 
-const PriceComponent = ({day, month, year, jsonResponse}) => {
+const PriceComponent = ({crypto, dollars, day, month, year, jsonResponse}) => {
     return (
         <div>
-            <p>Day: {day}, Month:{month}, Year:{year}, Price:{jsonResponse}</p>
+            <p>Day: {day}, Month:{month}, Year:{year}, Price:{jsonResponse}, Monthly Amount:${dollars}, Amount of {crypto} purchased: {dollars/jsonResponse}</p>
       
         </div>
     )

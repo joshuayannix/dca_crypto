@@ -15,6 +15,7 @@ function App() {
   const [selectedDate, handleDateChange] = useState(new Date());
   const [selectedEndDate, handleEndDateChange] = useState(new Date());
   const [crypto, setCrypto] = useState('')
+  const [dollars, setDollars] = useState('')
   const [months, setMonths] = useState([])
   const [apiPrices, setApiPrices] = useState([])
 
@@ -51,7 +52,7 @@ function App() {
   //   })
   // }
 
-  const apiAxios = (crypto, day, month, year) => {
+  const apiAxios = (crypto, day, month, year, dollars) => {
     axios
       .get(
         `https://api.coingecko.com/api/v3/coins/${crypto}/history?date=${day}-${month}-${year}&localization=false`
@@ -59,7 +60,7 @@ function App() {
       .then(res => {
         console.log(res.data)
         let jsonResponse = res.data.market_data.current_price.usd
-        setApiPrices(arr => [...arr, {day, month, year, jsonResponse}])
+        setApiPrices(arr => [...arr, {crypto, day, month, year, jsonResponse, dollars}])
       })
       .catch(error => console.log('Error from apiAxios:', error));
   }
@@ -77,7 +78,7 @@ function App() {
 
     for(let i=0; i<months.length; i++) {
       console.log('looping')
-      apiAxios(crypto, months[i].getDate(), months[i].getMonth() + 1, months[i].getFullYear())
+      apiAxios(crypto, months[i].getDate(), months[i].getMonth() + 1, months[i].getFullYear(), dollars)
     }
     //apiFetch(crypto, selectedDate.getDate(), selectedDate.getMonth() + 1, selectedDate.getFullYear())
     console.log('apiPrices:', apiPrices)
@@ -85,6 +86,10 @@ function App() {
 
   const changeCrypto = e => {
     setCrypto(e.target.value)
+  }
+
+  const changeDollars = e => {
+    setDollars(e.target.value)
   }
 
   
@@ -101,6 +106,17 @@ function App() {
           defalultValue="ethereum"
           onChange={changeCrypto}
           value={crypto}
+        />
+
+        <br/>
+        <br/>
+
+        <TextField 
+          required
+          variant="filled"
+          label="Monthly Dollar Amount" 
+          onChange={changeDollars}
+          value={dollars}
         />
 
         <br/>
@@ -155,6 +171,8 @@ function App() {
         {apiPrices.map(api => {
           return (
             <PriceComponent
+              crypto={api.crypto}
+              dollars={api.dollars}
               day={api.day}
               month={api.month}
               year={api.year}
