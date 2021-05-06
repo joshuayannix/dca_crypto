@@ -8,9 +8,15 @@ import TextField from '@material-ui/core/TextField';
 import axios from 'axios';
 import PriceComponent from './PriceComponent';
 import { useDispatch } from 'react-redux';
+import { addToCart } from './features/cartSlice';
+import { cartRedux } from './features/cartSlice';
+import { useSelector } from 'react-redux';
+import Subtotal from './Subtotal';
+
 
 function App() {
   const dispatch = useDispatch();
+  const cart = useSelector(cartRedux);
 
   const [selectedDate, handleDateChange] = useState(new Date());
   const [selectedEndDate, handleEndDateChange] = useState(new Date());
@@ -53,6 +59,19 @@ function App() {
   // }
 
   // old apiAxios before redux
+  // const apiAxios = (crypto, day, month, year, dollars) => {
+  //   axios
+  //     .get(
+  //       `https://api.coingecko.com/api/v3/coins/${crypto}/history?date=${day}-${month}-${year}&localization=false`
+  //     )
+  //     .then(res => {
+  //       console.log(res.data)
+  //       let jsonResponse = res.data.market_data.current_price.usd
+  //       setApiPrices(arr => [...arr, {crypto, day, month, year, jsonResponse, dollars}])
+  //     })
+  //     .catch(error => console.log('Error from apiAxios:', error));
+  // }
+
   const apiAxios = (crypto, day, month, year, dollars) => {
     axios
       .get(
@@ -61,7 +80,10 @@ function App() {
       .then(res => {
         console.log(res.data)
         let jsonResponse = res.data.market_data.current_price.usd
-        setApiPrices(arr => [...arr, {crypto, day, month, year, jsonResponse, dollars}])
+        let amountCryptoPurchased = dollars/jsonResponse
+        dispatch(addToCart({
+          item: { crypto, day, month, year, jsonResponse, dollars, amountCryptoPurchased }
+        }))
       })
       .catch(error => console.log('Error from apiAxios:', error));
   }
@@ -81,8 +103,7 @@ function App() {
       console.log('looping')
       apiAxios(crypto, months[i].getDate(), months[i].getMonth() + 1, months[i].getFullYear(), dollars)
     }
-    //apiFetch(crypto, selectedDate.getDate(), selectedDate.getMonth() + 1, selectedDate.getFullYear())
-    console.log('apiPrices:', apiPrices)
+
   };
 
   const changeCrypto = e => {
@@ -170,7 +191,7 @@ function App() {
         <div>Total amount invested:</div>
         Cryptocurrency: {crypto}
         <div>API Prices:</div>        
-        {apiPrices.map(api => {
+        {cart.map(api => {
           return (
             <PriceComponent
               crypto={api.crypto}
@@ -184,7 +205,9 @@ function App() {
         })}
         
       </div>
-                
+      <div>
+        <Subtotal />
+      </div>        
         
 
     </div>
