@@ -1,16 +1,16 @@
 import React, { useState } from 'react'
 import './App.css';
-import {MuiPickersUtilsProvider, KeyboardDatePicker,} from '@material-ui/pickers';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import Button from '@material-ui/core/Button';
 import 'date-fns';
 import TextField from '@material-ui/core/TextField';
 import axios from 'axios';
 import PriceComponent from './PriceComponent';
-
+import { useDispatch } from 'react-redux';
 
 function App() {
-  
+  const dispatch = useDispatch();
 
   const [selectedDate, handleDateChange] = useState(new Date());
   const [selectedEndDate, handleEndDateChange] = useState(new Date());
@@ -52,6 +52,7 @@ function App() {
   //   })
   // }
 
+  // old apiAxios before redux
   const apiAxios = (crypto, day, month, year, dollars) => {
     axios
       .get(
@@ -166,6 +167,7 @@ function App() {
       <div>
         RESULTS
         <br/>
+        <div>Total amount invested:</div>
         Cryptocurrency: {crypto}
         <div>API Prices:</div>        
         {apiPrices.map(api => {
