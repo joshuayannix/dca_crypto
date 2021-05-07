@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './App.css';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
@@ -25,6 +25,9 @@ function App() {
   const [months, setMonths] = useState([])
   const [apiPrices, setApiPrices] = useState([])
 
+  useEffect(() => {
+    
+  })
   // Add Months method
   function addMonths(date, months) {
     let copiedDate = new Date(date.getTime())
@@ -72,20 +75,39 @@ function App() {
   //     .catch(error => console.log('Error from apiAxios:', error));
   // }
 
-  const apiAxios = (crypto, day, month, year, dollars) => {
-    axios
-      .get(
+  //non async
+  // const apiAxios = (crypto, day, month, year, dollars) => {
+  //   axios
+  //     .get(
+  //       `https://api.coingecko.com/api/v3/coins/${crypto}/history?date=${day}-${month}-${year}&localization=false`
+  //     )
+  //     .then(res => {
+  //       console.log(res.data)
+  //       let jsonResponse = res.data.market_data.current_price.usd
+  //       let amountCryptoPurchased = dollars/jsonResponse
+  //       dispatch(addToCart({
+  //         item: { crypto, day, month, year, jsonResponse, dollars, amountCryptoPurchased }
+  //       }))
+  //     })
+  //     .catch(error => console.log('Error from apiAxios:', error));
+  // }
+
+  const apiAxios = async (crypto, day, month, year, dollars) => {
+    try {
+      const res = await axios.get(
         `https://api.coingecko.com/api/v3/coins/${crypto}/history?date=${day}-${month}-${year}&localization=false`
       )
-      .then(res => {
-        console.log(res.data)
-        let jsonResponse = res.data.market_data.current_price.usd
-        let amountCryptoPurchased = dollars/jsonResponse
-        dispatch(addToCart({
-          item: { crypto, day, month, year, jsonResponse, dollars, amountCryptoPurchased }
-        }))
-      })
-      .catch(error => console.log('Error from apiAxios:', error));
+      console.log('api call completed for: ', crypto, day, month, year, dollars);      
+
+      let jsonResponse = res.data.market_data.current_price.usd
+      let amountCryptoPurchased = dollars/jsonResponse
+
+      dispatch(addToCart({
+        item: { crypto, day, month, year, jsonResponse, dollars, amountCryptoPurchased }
+      }));
+    } catch (error) {
+      console.log('error from apiAxios', error)
+    }    
   }
 
   
@@ -95,14 +117,20 @@ function App() {
     // Calculate all the month times between the dates, and update the months array
     let monthTimes = calculateMonthlyDates(selectedDate,selectedEndDate)
     setMonths(monthTimes)
-
+    console.log('submitted')
     // For each month time in the months array, we need to call the API to get a price
     // Add these prices to the apiPrices array
 
+    /* This for loop is getting skipped, not because of anything with apiAxios
+    But because months.length is 0!
+    */
+   console.log(months, months.length)
     for(let i=0; i<months.length; i++) {
       console.log('looping')
       apiAxios(crypto, months[i].getDate(), months[i].getMonth() + 1, months[i].getFullYear(), dollars)
     }
+
+    console.log('after the loop')
 
   };
 
@@ -186,11 +214,7 @@ function App() {
       </form>
 
       <div>
-        RESULTS
-        <br/>
-        <div>Total amount invested:</div>
-        Cryptocurrency: {crypto}
-        <div>API Prices:</div>        
+        <h2>Monthly Investments</h2>               
         {cart.map(api => {
           return (
             <PriceComponent
@@ -205,6 +229,7 @@ function App() {
         })}
         
       </div>
+      <h2> Summary of Investments</h2>
       <div>
         <Subtotal />
       </div>        
