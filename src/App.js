@@ -18,38 +18,12 @@ function App() {
   const dispatch = useDispatch();
   const cart = useSelector(cartRedux);
 
-  const [selectedDate, handleDateChange] = useState(new Date());
-  const [selectedEndDate, handleEndDateChange] = useState(new Date());
+  const [selectedDate, setDate] = useState(new Date());
+  const [selectedEndDate, setEndDate] = useState(new Date());
   const [crypto, setCrypto] = useState('')
   const [dollars, setDollars] = useState('')
   const [months, setMonths] = useState([])
-  const [apiPrices, setApiPrices] = useState([])
 
-  useEffect(() => {
-    
-  })
-  // Add Months method
-  function addMonths(date, months) {
-    let copiedDate = new Date(date.getTime())
-    var d = copiedDate.getDate();
-    copiedDate.setMonth(copiedDate.getMonth() + +months);
-    if (copiedDate.getDate() != d) {
-        copiedDate.setDate(0);
-    }
-    return copiedDate;
-  }
-
-  // Calculate number of months in between start and end dates
-  const calculateMonthlyDates = (start, end) => {
-    let months = end.getMonth() - start.getMonth()
-    let dates = [start]
-
-    for(let i=1; i<=months; i++) {
-        let newDate = addMonths(start, i)   
-        dates.push(newDate)   
-    }
-    return dates
-  }
 
   // const apiFetch = (crypto, day, month, year) => {
   //   fetch(`https://api.coingecko.com/api/v3/coins/${crypto}/history?date=${day}-${month}-${year}&localization=false`)
@@ -97,7 +71,7 @@ function App() {
       const res = await axios.get(
         `https://api.coingecko.com/api/v3/coins/${crypto}/history?date=${day}-${month}-${year}&localization=false`
       )
-      console.log('api call completed for: ', crypto, day, month, year, dollars);      
+      //console.log('api call completed for: ', crypto, day, month, year, dollars);      
 
       let jsonResponse = res.data.market_data.current_price.usd
       let amountCryptoPurchased = dollars/jsonResponse
@@ -110,51 +84,62 @@ function App() {
     }    
   }
 
-  
-  const onSubmit = e => {
-    e.preventDefault()
+  // useEffect(() => {
+  //   console.log('from useEffect apiaxios')
+  // }, [])
 
-    // Calculate all the month times between the dates, and update the months array
-    let monthTimes = calculateMonthlyDates(selectedDate,selectedEndDate)
-    setMonths(monthTimes)
-    console.log('submitted')
+  const handleSubmit = e => {
+    e.preventDefault()
+    // Remove all the existing data from redux. remove from cart
+
+    
+    
     // For each month time in the months array, we need to call the API to get a price
     // Add these prices to the apiPrices array
 
-    /* This for loop is getting skipped, not because of anything with apiAxios
-    But because months.length is 0!
-    */
-   console.log(months, months.length)
+      
+    console.log(months, crypto, dollars, selectedDate, selectedEndDate)
+   
     for(let i=0; i<months.length; i++) {
-      console.log('looping')
+      //console.log('looping')
       apiAxios(crypto, months[i].getDate(), months[i].getMonth() + 1, months[i].getFullYear(), dollars)
     }
 
-    console.log('after the loop')
+    //console.log('after the loop')
+    //console.log(months, crypto, dollars, selectedDate, selectedEndDate)
 
   };
 
-  const changeCrypto = e => {
+  const handleCrypto = e => {
     setCrypto(e.target.value)
   }
 
-  const changeDollars = e => {
+  const handleDollars = e => {
     setDollars(e.target.value)
   }
 
-  
+  const handleDateChange = e => {
+    console.log(e)
+    if(e.target) {
+      setDate(e.target.value)
+    }
+    //setDate(e.target.value)
+  }
+
+  const handleEndDateChange = e => {
+    setEndDate(e.target.value)
+  }
 
   return (
     <div className="App">      
-      <form onSubmit={onSubmit}>    
+      <form onSubmit={handleSubmit}>    
         
         <TextField 
           required
           variant="filled"
           id="standard-basic" 
           label="Cryptocurrency" 
-          defalultValue="ethereum"
-          onChange={changeCrypto}
+          onChange={handleCrypto}
           value={crypto}
         />
 
@@ -165,7 +150,7 @@ function App() {
           required
           variant="filled"
           label="Monthly Dollar Amount" 
-          onChange={changeDollars}
+          onChange={handleDollars}
           value={dollars}
         />
 
@@ -179,7 +164,7 @@ function App() {
             label="Start Date"
             format="MM/dd/yyyy"
             value={selectedDate}
-            onChange={handleDateChange}
+            onChange={setDate}
             KeyboardButtonProps={{
               'aria-label': 'change date',
             }}
@@ -196,7 +181,7 @@ function App() {
             label="End date"
             format="MM/dd/yyyy"
             value={selectedEndDate}
-            onChange={handleEndDateChange}
+            onChange={setEndDate}
             KeyboardButtonProps={{
               'aria-label': 'change date',
             }}
