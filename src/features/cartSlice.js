@@ -9,6 +9,9 @@ export const cartSlice = createSlice({
     addToCart: (state, action) => {
       state.cartRedux = [...state.cartRedux, action.payload.item];
     },
+    clearCart: (state, action) => {
+      state.cartRedux = []
+    },
     removeFromCart: (state, action) => {
       let newCart = [...state.cartRedux];
 
@@ -26,7 +29,7 @@ export const cartSlice = createSlice({
   }
 })
 
-export const { addToCart, removeFromCart } = cartSlice.actions;
+export const { addToCart, clearCart, removeFromCart } = cartSlice.actions;
 
 export const cartRedux = state => state.cart.cartRedux;
 

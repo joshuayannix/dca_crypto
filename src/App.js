@@ -8,11 +8,10 @@ import TextField from '@material-ui/core/TextField';
 import axios from 'axios';
 import PriceComponent from './PriceComponent';
 import { useDispatch } from 'react-redux';
-import { addToCart } from './features/cartSlice';
+import { addToCart, clearCart } from './features/cartSlice';
 import { cartRedux } from './features/cartSlice';
 import { useSelector } from 'react-redux';
 import Subtotal from './Subtotal';
-
 
 function App() {
   const dispatch = useDispatch();
@@ -24,54 +23,11 @@ function App() {
   const [dollars, setDollars] = useState('')
   const [months, setMonths] = useState([])
 
-
-  // const apiFetch = (crypto, day, month, year) => {
-  //   fetch(`https://api.coingecko.com/api/v3/coins/${crypto}/history?date=${day}-${month}-${year}&localization=false`)
-  //   .then(res => res.json())
-  //   .then(json => {
-  //     let jsonResponse = json.market_data.current_price.usd
-  //     // update the array of prices
-  //     setApiPrices(arr => [...arr, jsonResponse])
-  //   })
-  // }
-
-  // old apiAxios before redux
-  // const apiAxios = (crypto, day, month, year, dollars) => {
-  //   axios
-  //     .get(
-  //       `https://api.coingecko.com/api/v3/coins/${crypto}/history?date=${day}-${month}-${year}&localization=false`
-  //     )
-  //     .then(res => {
-  //       console.log(res.data)
-  //       let jsonResponse = res.data.market_data.current_price.usd
-  //       setApiPrices(arr => [...arr, {crypto, day, month, year, jsonResponse, dollars}])
-  //     })
-  //     .catch(error => console.log('Error from apiAxios:', error));
-  // }
-
-  //non async
-  // const apiAxios = (crypto, day, month, year, dollars) => {
-  //   axios
-  //     .get(
-  //       `https://api.coingecko.com/api/v3/coins/${crypto}/history?date=${day}-${month}-${year}&localization=false`
-  //     )
-  //     .then(res => {
-  //       console.log(res.data)
-  //       let jsonResponse = res.data.market_data.current_price.usd
-  //       let amountCryptoPurchased = dollars/jsonResponse
-  //       dispatch(addToCart({
-  //         item: { crypto, day, month, year, jsonResponse, dollars, amountCryptoPurchased }
-  //       }))
-  //     })
-  //     .catch(error => console.log('Error from apiAxios:', error));
-  // }
-
   const apiAxios = async (crypto, day, month, year, dollars) => {
     try {
       const res = await axios.get(
         `https://api.coingecko.com/api/v3/coins/${crypto}/history?date=${day}-${month}-${year}&localization=false`
       )
-      //console.log('api call completed for: ', crypto, day, month, year, dollars);      
 
       let jsonResponse = res.data.market_data.current_price.usd
       let amountCryptoPurchased = dollars/jsonResponse
@@ -84,30 +40,43 @@ function App() {
     }    
   }
 
-  // useEffect(() => {
-  //   console.log('from useEffect apiaxios')
-  // }, [])
+  function addMonths(date, months) {
+    let copiedDate = new Date(date.getTime())
+    var d = copiedDate.getDate();
+    copiedDate.setMonth(copiedDate.getMonth() + +months);
+    if (copiedDate.getDate() !== d) {
+        copiedDate.setDate(0);
+    }
+    return copiedDate;
+  }
+
+const calculateMonths = (d1, d2) => {
+    let diff = d2.getTime() - d1.getTime()
+    let msInMonth = 1000 * 3600 * 24 * 30
+
+    let months = diff/msInMonth
+    // console.log(months);
+
+    let result = [d1];
+    
+    for(let i=1; i<months; i++) {
+        let newDate = addMonths(d1, i)
+        result.push(newDate)
+    }
+    return result
+}
 
   const handleSubmit = e => {
     e.preventDefault()
-    // Remove all the existing data from redux. remove from cart
+    dispatch(clearCart())
+    let monthsArray = calculateMonths(selectedDate, selectedEndDate)
+    setMonths(monthsArray);
 
-    
-    
-    // For each month time in the months array, we need to call the API to get a price
-    // Add these prices to the apiPrices array
-
-      
     console.log(months, crypto, dollars, selectedDate, selectedEndDate)
    
     for(let i=0; i<months.length; i++) {
-      //console.log('looping')
       apiAxios(crypto, months[i].getDate(), months[i].getMonth() + 1, months[i].getFullYear(), dollars)
     }
-
-    //console.log('after the loop')
-    //console.log(months, crypto, dollars, selectedDate, selectedEndDate)
-
   };
 
   const handleCrypto = e => {
@@ -118,17 +87,17 @@ function App() {
     setDollars(e.target.value)
   }
 
-  const handleDateChange = e => {
-    console.log(e)
-    if(e.target) {
-      setDate(e.target.value)
-    }
-    //setDate(e.target.value)
-  }
+  // const handleDateChange = e => {
+  //   console.log(e)
+  //   if(e.target) {
+  //     setDate(e.target.value)
+  //   }
+  //   //setDate(e.target.value)
+  // }
 
-  const handleEndDateChange = e => {
-    setEndDate(e.target.value)
-  }
+  // const handleEndDateChange = e => {
+  //   setEndDate(e.target.value)
+  // }
 
   return (
     <div className="App">      
@@ -157,6 +126,7 @@ function App() {
         <br/>
         <br/>
         
+      
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <KeyboardDatePicker 
             margin="normal"

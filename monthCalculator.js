@@ -10,34 +10,23 @@
   }
 
 const calculateMonths = (d1, d2) => {
-    console.log(d1.getTime())
-    console.log(d2.getTime())
-
     let diff = d2.getTime() - d1.getTime()
-
-    let msInDay = 1000 * 3600 * 24
-    console.log(diff/msInDay)
-
     let msInMonth = 1000 * 3600 * 24 * 30
 
     let months = diff/msInMonth
-    console.log(months);
-    /*
-    calculate the number of months between the two dates
-    Then from there, output the actual month dates
-    */
+    // console.log(months);
 
-    let result = [];
+    let result = [d1];
     
-    for(let i=0; i<months-1; i++) {
+    for(let i=1; i<months-1; i++) {
         let newDate = addMonths(d1, i)
         result.push(newDate)
     }
-    console.log(result)
+    return result
 }
 
 let test1 = new Date(2020, 1, 1)
-let test2 = new Date(2021, 2, 4)
+let test2 = new Date(2020, 1, 4)
 console.log(calculateMonths(test1, test2))
 
 /*
@@ -65,4 +54,63 @@ console.log(calculateMonths(test1, test2))
     return dates
   }
 
+
+
+
+    // const apiFetch = (crypto, day, month, year) => {
+  //   fetch(`https://api.coingecko.com/api/v3/coins/${crypto}/history?date=${day}-${month}-${year}&localization=false`)
+  //   .then(res => res.json())
+  //   .then(json => {
+  //     let jsonResponse = json.market_data.current_price.usd
+  //     // update the array of prices
+  //     setApiPrices(arr => [...arr, jsonResponse])
+  //   })
+  // }
+
+  // old apiAxios before redux
+  // const apiAxios = (crypto, day, month, year, dollars) => {
+  //   axios
+  //     .get(
+  //       `https://api.coingecko.com/api/v3/coins/${crypto}/history?date=${day}-${month}-${year}&localization=false`
+  //     )
+  //     .then(res => {
+  //       console.log(res.data)
+  //       let jsonResponse = res.data.market_data.current_price.usd
+  //       setApiPrices(arr => [...arr, {crypto, day, month, year, jsonResponse, dollars}])
+  //     })
+  //     .catch(error => console.log('Error from apiAxios:', error));
+  // }
+
+  //non async
+  // const apiAxios = (crypto, day, month, year, dollars) => {
+  //   axios
+  //     .get(
+  //       `https://api.coingecko.com/api/v3/coins/${crypto}/history?date=${day}-${month}-${year}&localization=false`
+  //     )
+  //     .then(res => {
+  //       console.log(res.data)
+  //       let jsonResponse = res.data.market_data.current_price.usd
+  //       let amountCryptoPurchased = dollars/jsonResponse
+  //       dispatch(addToCart({
+  //         item: { crypto, day, month, year, jsonResponse, dollars, amountCryptoPurchased }
+  //       }))
+  //     })
+  //     .catch(error => console.log('Error from apiAxios:', error));
+  // }
+
+
+
+  <div>
+          <h6>Start Date </h6>
+          <input 
+            type="date" 
+            id="start" 
+            class="form-control" 
+            name="trip-start" 
+            value="2016-07-22" 
+            min="2000-1-1"
+            onChange={setDate}
+          >
+            </input>
+        </div>
 */
