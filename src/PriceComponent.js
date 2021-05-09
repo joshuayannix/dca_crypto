@@ -17,7 +17,7 @@ const PriceComponent = ({crypto, dollars, day, month, year, jsonResponse}) => {
     }
     return (
         <div>
-            <p>{monthHash[month]} {day}, {year}. Purchase Price: ${jsonResponse}, USD Invested: ${dollars}, Amount of {crypto} purchased: {dollars/jsonResponse}</p>      
+            <p>{monthHash[month-1]} {day}, {year}. Purchase Price: ${jsonResponse}, USD Invested: ${dollars}, Amount of {crypto} purchased: {dollars/jsonResponse}</p>      
         </div>
     )
 }

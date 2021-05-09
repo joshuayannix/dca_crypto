@@ -35,6 +35,7 @@ function App() {
       dispatch(addToCart({
         item: { crypto, day, month, year, jsonResponse, dollars, amountCryptoPurchased }
       }));
+      console.log('apiAxios. ', 'cart: ', cart)
     } catch (error) {
       console.log('error from apiAxios', error)
     }    
@@ -55,11 +56,10 @@ const calculateMonths = (d1, d2) => {
     let msInMonth = 1000 * 3600 * 24 * 30
 
     let months = diff/msInMonth
-    // console.log(months);
 
-    let result = [d1];
+    let result = [];
     
-    for(let i=1; i<months; i++) {
+    for(let i=0; i<months; i++) {
         let newDate = addMonths(d1, i)
         result.push(newDate)
     }
@@ -69,11 +69,16 @@ const calculateMonths = (d1, d2) => {
   const handleSubmit = e => {
     e.preventDefault()
     dispatch(clearCart())
+
     let monthsArray = calculateMonths(selectedDate, selectedEndDate)
     setMonths(monthsArray);
 
-    console.log(months, crypto, dollars, selectedDate, selectedEndDate)
-   
+    console.log('cart: ', cart)
+    console.log(months.length, months, crypto, dollars, selectedDate, selectedEndDate)
+    
+    console.log('first month ', months[0])
+    //apiAxios(crypto, months[0].getDate(), months[0].getMonth() + 1, months[0].getFullYear(), dollars);
+
     for(let i=0; i<months.length; i++) {
       apiAxios(crypto, months[i].getDate(), months[i].getMonth() + 1, months[i].getFullYear(), dollars)
     }

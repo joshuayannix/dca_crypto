@@ -13,12 +13,11 @@ const calculateMonths = (d1, d2) => {
     let diff = d2.getTime() - d1.getTime()
     let msInMonth = 1000 * 3600 * 24 * 30
 
-    let months = diff/msInMonth
-    // console.log(months);
+    let months = diff/msInMonth    
 
     let result = [d1];
     
-    for(let i=1; i<months-1; i++) {
+    for(let i=0; i<months; i++) {
         let newDate = addMonths(d1, i)
         result.push(newDate)
     }
@@ -26,7 +25,7 @@ const calculateMonths = (d1, d2) => {
 }
 
 let test1 = new Date(2020, 1, 1)
-let test2 = new Date(2020, 1, 4)
+let test2 = new Date(2020, 3, 4)
 console.log(calculateMonths(test1, test2))
 
 /*
