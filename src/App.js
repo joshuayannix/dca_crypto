@@ -115,6 +115,7 @@ const calculateMonths = (d1, d2) => {
           label="Cryptocurrency" 
           onChange={handleCrypto}
           value={crypto}
+          
         />
 
         <br/>
